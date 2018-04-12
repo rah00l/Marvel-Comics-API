@@ -4,7 +4,7 @@ module MarvelComicsApi
       include HTTParty
       base_uri 'http://gateway.marvel.com'
 
-      attr_accessor :public_key, :private_key, :api_version
+      attr_accessor :public_key, :private_key, :api_version, :router
 
       class InvalidClientError < StandardError; end
 
@@ -13,6 +13,12 @@ module MarvelComicsApi
         @public_key = attrs.fetch(:public_key)
         @private_key = attrs.fetch(:private_key)
         @api_version = attrs.fetch(:api_version) { 'v1' }
+        @router = attrs.fetch(:router) { MarvelComicsApi.router(:api_version => @api_version) }
+      end
+
+      def characters(query_params = {})
+        response = self.class.get("/#{api_version}/#{router.characters_path}", :query => params(query_params))
+        Response.new(response)
       end
 
       private

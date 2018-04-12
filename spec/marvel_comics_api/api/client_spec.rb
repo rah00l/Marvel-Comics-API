@@ -33,6 +33,11 @@ describe MarvelComicsApi::API::Client do
       it 'is an instance of MarvelComicsApi::Client' do
         expect(client).to be_a(MarvelComicsApi::API::Client)
       end
+
+      it 'has an API Router instance in its config' do
+        expect(client.router).to_not be_nil
+        expect(client.router).to be_a(MarvelComicsApi::API::Router)
+      end
     end
   end
 
@@ -58,6 +63,25 @@ describe MarvelComicsApi::API::Client do
         expect(client.send(:params)).to eq(
           {:apikey => client.public_key, :ts => '1', :hash => 'ffd275c5130566a2916217b101f26150'}
         )
+      end
+    end
+  end
+
+  context "Character Endpoints" do
+    let(:client) { marvel_comics_api_test_client }
+
+    describe '#characters' do
+      before do
+        stub_get('characters?apikey=123456&ts=1&hash=d4f1bab013916a533ef31e3ad5fb0887', 'characters.json')
+      end
+
+      it 'returns a MarvelComicsApi::API::Response object' do
+        expect(client.characters).to be_a(MarvelComicsApi::API::Response)
+      end
+
+      it 'Response object is populated with JSON from the characters endpoint' do
+        expect(client.characters["status"]).to eq("Ok")
+        expect(client.characters[:data][:results].size).to eq(20)
       end
     end
   end
