@@ -21,6 +21,17 @@ module MarvelComicsApi
         Response.new(response)
       end
 
+      def character(value)
+         by_name = value.is_a?(String) ? true : false
+         response = if by_name
+           self.characters(:name => value)
+         else
+           self.class.get("/#{api_version}/#{router.character_path(value)}", :query => params)
+         end
+
+         Response.new(response)
+       end
+
       private
       def check_for_errors(attrs)
         [:public_key, :private_key].each do |key|

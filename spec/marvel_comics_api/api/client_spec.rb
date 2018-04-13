@@ -84,5 +84,27 @@ describe MarvelComicsApi::API::Client do
         expect(client.characters[:data][:results].size).to eq(20)
       end
     end
+
+    describe '#character' do
+      before do
+        stub_get('characters?name=Spider-Man&apikey=123456&ts=1&hash=d4f1bab013916a533ef31e3ad5fb0887', 'character.json')
+        stub_get('characters/1009610?apikey=123456&ts=1&hash=d4f1bab013916a533ef31e3ad5fb0887', 'character.json')
+      end
+      it 'returns a MarvelComicsApi::API::Response object' do
+        expect(client.character(1009610)).to be_a(MarvelComicsApi::API::Response)
+      end
+
+      it 'Response object is populated with JSON from the character endpoint' do
+        expect(client.character(1009610)[:data][:results][0][:name]).to eq('Spider-Man')
+      end
+
+      it 'accepts an Integer as character id' do
+        expect(client.character(1009610)[:data][:results][0][:name]).to eq('Spider-Man')
+      end
+
+      it 'accepts a String as character name' do
+        expect(client.character('Spider-Man')[:data][:results][0][:name]).to eq('Spider-Man')
+      end
+    end
   end
 end
